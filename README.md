@@ -54,7 +54,7 @@ Example result:
  'name': b'[DUD] QC:DE: DEATHMATCH',
  'name_nocolors': '[DUD] QC:DE: DEATHMATCH',
  'mapname': b'QCDE18',
- 'gametype': 3,
+ 'gametype': <GAMETYPE.DEATHMATCH: 3>,
  'gametype_instagib': 0,
  'gametype_buckshot': 0,
  'num_players': 4,

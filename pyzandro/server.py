@@ -147,7 +147,7 @@ def parse_response(response):
         for i in range(n_pwads):
             r['pwads'].append(next_string(streamobj))
     if SQF.GAMETYPE in response_flags:
-        r['gametype'] = next_byte(streamobj)
+        r['gametype'] = GAMETYPE(next_byte(streamobj))
         r['gametype_instagib'] = next_byte(streamobj)
         r['gametype_buckshot'] = next_byte(streamobj)
     if SQF.GAMENAME in response_flags:
