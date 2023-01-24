@@ -100,6 +100,3 @@ def query_master(master_address, timeout=2):
         if parsed['closing_status'] == MSC_ENDSERVERLIST:
             break
     return parsed['ip_list']
-
-# usage:
-# query_masterserver("zandronum.com:15300")
