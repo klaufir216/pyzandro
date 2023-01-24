@@ -99,6 +99,24 @@ Both `query_master` and `query_server` can get an optional timeout parameter. Wh
 pyzandro.query_server('103.25.59.27:10666', timeout=2)
 ```
 
+## Complete Example
+
+An example querying all zandronum servers.
+
+```py
+import pyzandro
+addresses = pyzandro.query_master('master.zandronum.com:15300')
+for address in addresses:
+    try:
+        serverinfo = pyzandro.query_server(address)
+        print(f'{address}: {serverinfo["name_nocolors"]}')
+    except TimeoutError:
+        print(f'{address}: timeout')
+    except ConnectionResetError:
+        print(f'{address}: connection reset')
+```
+
+
 # Running tests
 Run `pytest` from the repo root.
 
