@@ -44,7 +44,7 @@ Example result:
 {'response_code': 5660023,
  'response_code_meaning': 'accepted',
  'query_time': 1674498560,
- 'version': b'1.3.2-r2023-01-14 01:35:53 -0500 (TSPGv26) on Linux 5.4.0-137-generic',
+ 'version': '1.3.2-r2023-01-14 01:35:53 -0500 (TSPGv26) on Linux 5.4.0-137-generic',
  'response_flags_value': 1573001,
  'response_flags': {<SQF.GAMETYPE: 128>,
   <SQF.MAPNAME: 8>,

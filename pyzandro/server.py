@@ -122,7 +122,7 @@ def parse_response(response):
         return r
 
     r['query_time'] = next_long(streamobj)
-    r['version'] = next_string(streamobj)
+    r['version'] = str(next_string(streamobj), 'utf-8')
     response_flags_value = next_long(streamobj)
     response_flags = dissect_flags(SQF, response_flags_value)
     r['response_flags_value'] = response_flags_value
