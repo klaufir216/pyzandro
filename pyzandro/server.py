@@ -64,7 +64,7 @@ class SQF(Enum):
     DEH = 0x40000000
     EXTENDED_INFO = 0x80000000
 
-def nocolors(name_bytes):
+def nocolor(name_bytes):
     import re
     newcolors_removed = re.sub(rb'\x1c\[..\]', b'', name_bytes)
     allcolros_removed = re.sub(rb'\x1c.', b'', newcolors_removed)
@@ -130,7 +130,7 @@ def parse_response(response):
 
     if SQF.NAME in response_flags:
         r['name'] = next_string(streamobj)
-        r['name_nocolors'] = nocolors(r['name'])
+        r['name_nocolor'] = nocolor(r['name'])
     if SQF.URL in response_flags:
         r['url'] = next_string(streamobj)
     if SQF.EMAIL in response_flags:
@@ -187,7 +187,7 @@ def parse_response(response):
         for i in range(r['num_players']):
             player = {}
             player['name'] = next_string(streamobj)
-            player['name_nocolors'] = nocolors(player['name'])
+            player['name_nocolor'] = nocolor(player['name'])
             player['frags'] = next_short(streamobj)
             player['ping'] = next_short(streamobj)
             player['spec'] = next_byte(streamobj)

@@ -52,14 +52,14 @@ Example result:
   <SQF.NUMPLAYERS: 524288>,
   <SQF.PLAYERDATA: 1048576>},
  'name': b'[DUD] QC:DE: DEATHMATCH',
- 'name_nocolors': '[DUD] QC:DE: DEATHMATCH',
+ 'name_nocolor': '[DUD] QC:DE: DEATHMATCH',
  'mapname': b'QCDE18',
  'gametype': <GAMETYPE.DEATHMATCH: 3>,
  'gametype_instagib': 0,
  'gametype_buckshot': 0,
  'num_players': 4,
  'players': [{'name': b'CheeBeef',
-   'name_nocolors': 'CheeBeef',
+   'name_nocolor': 'CheeBeef',
    'frags': 0,
    'ping': 0,
    'spec': 0,
@@ -67,7 +67,7 @@ Example result:
    'team': None,
    'time_on_server': 0},
   {'name': b'Hayden',
-   'name_nocolors': 'Hayden',
+   'name_nocolor': 'Hayden',
    'frags': 0,
    'ping': 0,
    'spec': 0,
@@ -75,7 +75,7 @@ Example result:
    'team': None,
    'time_on_server': 0},
   {'name': b'Leontlady36',
-   'name_nocolors': 'Leontlady36',
+   'name_nocolor': 'Leontlady36',
    'frags': 0,
    'ping': 0,
    'spec': 0,
@@ -83,7 +83,7 @@ Example result:
    'team': None,
    'time_on_server': 0},
   {'name': b'Slambert',
-   'name_nocolors': 'Slambert',
+   'name_nocolor': 'Slambert',
    'frags': 0,
    'ping': 0,
    'spec': 0,
@@ -109,7 +109,7 @@ addresses = pyzandro.query_master('master.zandronum.com:15300')
 for address in addresses:
     try:
         serverinfo = pyzandro.query_server(address)
-        print(f'{address}: {serverinfo["name_nocolors"]}')
+        print(f'{address}: {serverinfo["name_nocolor"]}')
     except TimeoutError:
         print(f'{address}: timeout')
     except ConnectionResetError:

@@ -16,4 +16,3 @@ def test_huffman_roundtrip():
     for idx in range(100):
         random_data = bytes([randrange(1,256) for _ in range(10*idx)])
         assert roundtrip(random_data), f"huffman roundtrip failed for {repr(random_data)}"
-    

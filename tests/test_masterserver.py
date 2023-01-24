@@ -13,6 +13,3 @@ def test_parse():
     parse_packet(p2, r)
     assert len(r['ip_list']) == 469
     assert r['closing_status'] == MSC_ENDSERVERLIST
-
-    
-    

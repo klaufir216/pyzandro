@@ -12,4 +12,4 @@ def test_process_team_game():
     r = parse_response(d4)
     assert r['players'][0]['team'] == 0
     assert r['players'][0]['bot'] == 1
-    assert r['name_nocolors'] == '[EB] QC:DE Team Deathmatch'
+    assert r['name_nocolor'] == '[EB] QC:DE Team Deathmatch'
