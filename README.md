@@ -92,11 +92,11 @@ Example result:
    'time_on_server': 0}]}
 ```
 
-# Timeout setting
+## Timeout setting
 Both `query_master` and `query_server` can get an optional timeout parameter. Which is how long a client will wait for a response in seconds.
 
 ```
-pyzandro.query_server('103.25.59.27:10666', timeout=5)
+pyzandro.query_server('103.25.59.27:10666', timeout=2)
 ```
 
 # Running tests
