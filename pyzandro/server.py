@@ -136,7 +136,7 @@ def parse_response(response):
     if SQF.EMAIL in response_flags:
         r['email'] = next_string(streamobj)
     if SQF.MAPNAME in response_flags:
-        r['mapname'] = next_string(streamobj)
+        r['mapname'] = str(next_string(streamobj), 'utf-8')
     if SQF.MAXCLIENTS in response_flags:
         r['maxclients'] = next_byte(streamobj)
     if SQF.MAXPLAYERS in response_flags:

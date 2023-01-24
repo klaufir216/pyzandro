@@ -53,7 +53,7 @@ Example result:
   <SQF.PLAYERDATA: 1048576>},
  'name': b'[DUD] QC:DE: DEATHMATCH',
  'name_nocolor': '[DUD] QC:DE: DEATHMATCH',
- 'mapname': b'QCDE18',
+ 'mapname': 'QCDE18',
  'gametype': <GAMETYPE.DEATHMATCH: 3>,
  'gametype_instagib': 0,
  'gametype_buckshot': 0,
