@@ -27,3 +27,6 @@ def next_float(streamobj):
 
 def next_byte(streamobj):
     return streamobj.read(1)[0]
+
+class PyZandroException(Exception):
+    pass

@@ -11,6 +11,7 @@ from .utils import next_ushort
 from .utils import next_float
 from .utils import next_byte
 from .utils import split_hostport
+from .utils import PyZandroException
 
 MSC_SERVERBLOCK = 8
 MSC_BEGINSERVERLISTPART = 6
@@ -50,7 +51,7 @@ def parse_packet(resp, r={}):
     else:
         r['status_meaning'] = 'UNKNOWN'
     if r['status'] != 6:
-        return r
+        raise PyZandroException("Unexpected response: " + repr(r))
 
     assert r['status'] == MSC_BEGINSERVERLISTPART, \
         f"Invalid status code {r['status']} from master server, expected MSC_BEGINSERVERLISTPART (6). " + \
