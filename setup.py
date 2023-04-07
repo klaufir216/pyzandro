@@ -3,9 +3,11 @@ import io
 import os
 from setuptools import find_packages, setup
 
+exec(open('pyzandro/version.py').read())
+
 setup(
     name="pyzandro",
-    version='0.1.0',
+    version=__version__,
     description="Querying tool for Zandronum servers",
     url="https://github.com/klaufir216/pyzandro/",
     author="klaufir216",
