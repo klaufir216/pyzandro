@@ -12,6 +12,7 @@ from .utils import next_float
 from .utils import next_byte
 from .utils import split_hostport
 from .utils import PyZandroException
+from .utils import log_message
 
 MSC_SERVERBLOCK = 8
 MSC_BEGINSERVERLISTPART = 6
@@ -21,24 +22,28 @@ LAUNCHER_MASTER_CHALLENGE = 5660028
 MASTER_SERVER_VERSION = 2
 
 def send_query(address, timeout):
+    log_message(call='masterserver.send_query()', address=address, timeout=timeout)
     host, port = split_hostport(address)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    master_query = struct.pack('<lh',
+    unencoded_query = struct.pack('<lh',
         LAUNCHER_MASTER_CHALLENGE, MASTER_SERVER_VERSION)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    client.sendto(huffencode(master_query), (host, port))
+    huffencoded_query = huffencode(unencoded_query)
+    client.sendto(huffencoded_query, (host, port))
+    log_message(call='[masterserver] sendto()', unencoded_query=unencoded_query, send_data=huffencoded_query, address=address)
     client.settimeout(timeout)
     return client
 
 def get_packet(client):
-    data = client.recv(1500)
-    return data
+    recv_data = client.recv(1500)
+    huffdecoded = huffdecode(recv_data)
+    log_message(call='[masterserver] recv()', huffdecoded=huffdecoded, recv_data=recv_data)
+    return huffdecoded
 
-def parse_packet(resp, r={}):
-    response = huffdecode(resp)
-    streamobj = BytesIO(response)
+def parse_packet(huffdecoded_packet, r={}):
+    streamobj = BytesIO(huffdecoded_packet)
     r['status'] = next_long(streamobj)
     if r['status'] == 6:
         r['status_meaning'] = 'MSC_BEGINSERVERLISTPART'
@@ -55,14 +60,14 @@ def parse_packet(resp, r={}):
 
     assert r['status'] == MSC_BEGINSERVERLISTPART, \
         f"Invalid status code {r['status']} from master server, expected MSC_BEGINSERVERLISTPART (6). " + \
-        f"response: {repr(reponse)}"
+        f"huffdecoded_packet: {repr(huffdecoded_packet)}"
 
     packet_number = next_byte(streamobj)
     r['server_block'] = next_byte(streamobj)
 
     assert r['server_block'] == MSC_SERVERBLOCK, \
         f"Invalid server block {r['server_block']} from master server, expeted MSC_SERVERBLOCK (8). " + \
-        f"full response: {repr(response)}"
+        f"full huffdecoded_packet: {repr(huffdecoded_packet)}"
 
     if 'ip_list' not in r:
         r['ip_list'] = []
@@ -96,8 +101,8 @@ def query_master(master_address, timeout=2):
     client = send_query(master_address, timeout)
     parsed = {}
     while True:
-        packet = get_packet(client)
-        parsed = parse_packet(packet, parsed)
+        huffdecoded_packet = get_packet(client)
+        parsed = parse_packet(huffdecoded_packet, parsed)
         if parsed['closing_status'] == MSC_ENDSERVERLIST:
             break
     return parsed['ip_list']

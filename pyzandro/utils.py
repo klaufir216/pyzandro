@@ -1,4 +1,34 @@
+import os
 import struct
+import time
+from base64 import b64encode
+import json
+
+log_config = {'log_target': None}
+
+def set_log_target(target):
+    log_config['log_target'] = target
+
+def base64ify(val):
+    """
+    bytes -> b64encode(val)
+    anythine else -> passthru
+    """
+    if isinstance(val, bytearray) or isinstance(val, bytes):
+        return str(b64encode(val), 'utf-8')
+    return val
+
+def log_message(**kwargs):
+    if log_config['log_target'] is None:
+        print("log_config['log_target'] is None")
+        return
+    d = {'unix_time': time.time()}
+    for k,v in kwargs.items():
+        d[k] = base64ify(v)
+    with open(log_config['log_target'], 'a', encoding='utf-8') as f:
+        f.write(json.dumps(d))
+        f.write('\n')
+
 
 def split_hostport(hostport):
     host, port = hostport.split(':')
