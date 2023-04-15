@@ -13,6 +13,7 @@ from .utils import next_byte
 from .utils import split_hostport
 from .utils import PyZandroException
 from .utils import log_message
+import traceback as tb
 
 MSC_SERVERBLOCK = 8
 MSC_BEGINSERVERLISTPART = 6
@@ -38,7 +39,12 @@ def send_query(address, timeout):
 
 def get_packet(client):
     recv_data = client.recv(1500)
-    huffdecoded = huffdecode(recv_data)
+    try:
+        huffdecoded = huffdecode(recv_data)
+    except Exception as e:
+        traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
+        log_message(call='[masterserver] recv() huffdecode failed', traceback=traceback, recv_data=recv_data)
+        raise
     log_message(call='[masterserver] recv()', huffdecoded=huffdecoded, recv_data=recv_data)
     return huffdecoded
 

@@ -11,6 +11,7 @@ from .utils import split_hostport
 from .utils import log_message
 from enum import Enum
 import struct
+import traceback as tb
 
 LAUNCHER_CHALLENGE = 199
 
@@ -260,6 +261,11 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
     log_message(call='[server] sendto()', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
     client.settimeout(timeout)
     recv_data = client.recv(1024)
-    huffdecoded = huffdecode(recv_data)
+    try:
+        huffdecoded = huffdecode(recv_data)
+    except Exception as e:
+        traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
+        log_message(call='[server] recv() huffdecode failed', traceback=traceback, recv_data=recv_data)
+        raise
     log_message(call='[server] recv()', huffdecoded=huffdecoded, recv_data=recv_data)
     return parse_response(huffdecoded)
