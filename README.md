@@ -99,6 +99,16 @@ Both `query_master` and `query_server` can get an optional timeout parameter. Wh
 pyzandro.query_server('103.25.59.27:10666', timeout=2)
 ```
 
+## Packet level logging
+
+There is a packet level logging feature that outputs into jsonlines. Binary data is base64 encoded.
+
+```
+pyzandro.set_log_target('/home/user/pyzandro_packets.log')
+```
+
+### 
+
 ## Complete Example
 
 An example querying all zandronum servers.
