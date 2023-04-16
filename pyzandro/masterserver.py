@@ -23,7 +23,7 @@ LAUNCHER_MASTER_CHALLENGE = 5660028
 MASTER_SERVER_VERSION = 2
 
 def send_query(address, timeout):
-    log_message(call='masterserver.send_query()', address=address, timeout=timeout)
+    log_message(call='masterserver.send_query() {', address=address, timeout=timeout)
     host, port = split_hostport(address)
 
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -35,17 +35,19 @@ def send_query(address, timeout):
     client.sendto(huffencoded_query, (host, port))
     log_message(call='[masterserver] sendto()', unencoded_query=unencoded_query, send_data=huffencoded_query, address=address)
     client.settimeout(timeout)
+    log_message(call='masterserver.send_query() }', address=address, timeout=timeout)
     return client
 
 def get_packet(client):
+    log_message(call='masterserver.get_packet() {')
     recv_data = client.recv(1500)
     try:
         huffdecoded = huffdecode(recv_data)
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
-        log_message(call='[masterserver] recv() huffdecode failed', traceback=traceback, recv_data=recv_data)
+        log_message(call='masterserver.get_packet() } huffdecode failed', traceback=traceback, recv_data=recv_data)
         raise
-    log_message(call='[masterserver] recv()', huffdecoded=huffdecoded, recv_data=recv_data)
+    log_message(call='masterserver.get_packet() }', huffdecoded=huffdecoded, recv_data=recv_data)
     return huffdecoded
 
 def parse_packet(huffdecoded_packet, r={}):
@@ -104,6 +106,7 @@ def parse_packet(huffdecoded_packet, r={}):
     return r
 
 def query_master(master_address, timeout=2):
+    log_message(call='masterserver.query_master() {', master_address=master_address, timeout=timeout)
     client = send_query(master_address, timeout)
     parsed = {}
     while True:
@@ -111,4 +114,5 @@ def query_master(master_address, timeout=2):
         parsed = parse_packet(huffdecoded_packet, parsed)
         if parsed['closing_status'] == MSC_ENDSERVERLIST:
             break
+    log_message(call='masterserver.query_master() }', master_address=master_address, timeout=timeout)
     return parsed['ip_list']

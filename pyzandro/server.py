@@ -244,7 +244,7 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
     # if we request playerdata we MUST also request gametype, because the presence
     # of the 'team' field depends in the playerdata response depends on the gametype
     # for non team games the byte representing the player's team is simply not sent
-    log_message(call='pyzandro.query_server()', address=address, flags=str(flags), timeout=timeout)
+    log_message(call='pyzandro.query_server() {', address=address, flags=str(flags), timeout=timeout)
     host, port = split_hostport(address)
     if SQF.PLAYERDATA in flags and SQF.GAMETYPE not in flags:
         flags.append(SQF.GAMETYPE)
@@ -265,7 +265,7 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
         huffdecoded = huffdecode(recv_data)
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
-        log_message(call='[server] recv() huffdecode failed', traceback=traceback, recv_data=recv_data)
+        log_message(call='pyzandro.query_server() } huffdecode failed', traceback=traceback, recv_data=recv_data)
         raise
-    log_message(call='[server] recv()', huffdecoded=huffdecoded, recv_data=recv_data)
+    log_message(call='pyzandro.query_server() }', huffdecoded=huffdecoded, recv_data=recv_data)
     return parse_response(huffdecoded)
