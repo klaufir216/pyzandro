@@ -3,6 +3,7 @@ import struct
 import time
 from base64 import b64encode
 import json
+import traceback as tb
 
 log_config = {'log_target': None}
 
@@ -25,6 +26,10 @@ def log_message(**kwargs):
     d = {'unix_time': time.time()}
     for k,v in kwargs.items():
         d[k] = base64ify(v)
+    try:
+        d['stack'] = ''.join(tb.format_stack())
+    except:
+        pass
     with open(log_config['log_target'], 'a', encoding='utf-8') as f:
         f.write(json.dumps(d))
         f.write('\n')
