@@ -126,7 +126,7 @@ def query_master(master_address, timeout=2):
         return parsed['ip_list']
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
-        log_message(call='masterserver.get_packet() exception', parsed=parsed, huffdecoded_packet=huffdecoded_packet, traceback=traceback)
+        log_message(call='masterserver.query_master() exception', parsed=parsed, huffdecoded_packet=huffdecoded_packet, traceback=traceback)
         raise
     finally:
         log_message(call='masterserver.query_master() }', master_address=master_address, timeout=timeout)
