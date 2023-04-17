@@ -262,11 +262,11 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         send_data = huffencode(unencoded_query)
         client.sendto(send_data, (host, port))
-        log_message(call='[server] sendto()', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
+        log_message(call='pyzandro.query_server() sendto', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
         client.settimeout(timeout)
         recv_data = client.recv(1024)
         huffdecoded = huffdecode(recv_data)
-        log_message(call='pyzandro.query_server() ', huffdecoded=huffdecoded, recv_data=recv_data)
+        log_message(call='pyzandro.query_server() recv', huffdecoded=huffdecoded, recv_data=recv_data)
         return parse_response(huffdecoded)
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))

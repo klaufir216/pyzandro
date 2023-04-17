@@ -23,20 +23,28 @@ LAUNCHER_MASTER_CHALLENGE = 5660028
 MASTER_SERVER_VERSION = 2
 
 def send_query(address, timeout):
-    log_message(call='masterserver.send_query() {', address=address, timeout=timeout)
-    host, port = split_hostport(address)
+    try:
+        unencoded_query = b''
+        huffencoded_query = b''
+        log_message(call='masterserver.send_query() {', address=address, timeout=timeout)
+        host, port = split_hostport(address)
 
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    unencoded_query = struct.pack('<lh',
-        LAUNCHER_MASTER_CHALLENGE, MASTER_SERVER_VERSION)
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        unencoded_query = struct.pack('<lh',
+            LAUNCHER_MASTER_CHALLENGE, MASTER_SERVER_VERSION)
 
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    huffencoded_query = huffencode(unencoded_query)
-    client.sendto(huffencoded_query, (host, port))
-    log_message(call='[masterserver] sendto()', unencoded_query=unencoded_query, send_data=huffencoded_query, address=address)
-    client.settimeout(timeout)
-    log_message(call='masterserver.send_query() }', address=address, timeout=timeout)
-    return client
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        huffencoded_query = huffencode(unencoded_query)
+        client.settimeout(timeout)
+        log_message(call='masterserver.send_query() sendto', unencoded_query=unencoded_query, huffencoded_query=huffencoded_query, address=address)
+        client.sendto(huffencoded_query, (host, port))
+        return client
+    except Exception as e:
+        traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
+        log_message(call='masterserver.send_query() exception', unencoded_query=unencoded_query, huffencoded_query=huffencoded_query, traceback=traceback)
+        raise
+    finally:
+        log_message(call='masterserver.send_query() }', address=address, timeout=timeout)
 
 def get_packet(client):
     log_message(call='masterserver.get_packet() {')
