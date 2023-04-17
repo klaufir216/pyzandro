@@ -9,6 +9,7 @@ from .utils import next_float
 from .utils import next_byte
 from .utils import split_hostport
 from .utils import log_message
+from .utils import PyZandroException
 from enum import Enum
 import struct
 import traceback as tb
@@ -119,9 +120,9 @@ def parse_response(response):
     else:
         r['response_code_meaning'] = 'unknown'
 
-    # early return when receiving invalid response code
+    # raise when receiving invalid response code
     if r['response_code'] != 5660023:
-        return r
+        raise PyZandroException(f'Invalid server response: {r}')
 
     r['query_time'] = next_long(streamobj)
     r['version'] = str(next_string(streamobj), 'utf-8')
@@ -244,28 +245,32 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
     # if we request playerdata we MUST also request gametype, because the presence
     # of the 'team' field depends in the playerdata response depends on the gametype
     # for non team games the byte representing the player's team is simply not sent
-    log_message(call='pyzandro.query_server() {', address=address, flags=str(flags), timeout=timeout)
-    host, port = split_hostport(address)
-    if SQF.PLAYERDATA in flags and SQF.GAMETYPE not in flags:
-        flags.append(SQF.GAMETYPE)
-    query_flags = combine_flags(SQF, flags)
-    extended_flags = 0
-    unencoded_query = struct.pack('<llll',
-        LAUNCHER_CHALLENGE,
-        query_flags,
-        int(time.time()),
-        extended_flags)
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    send_data = huffencode(unencoded_query)
-    client.sendto(send_data, (host, port))
-    log_message(call='[server] sendto()', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
-    client.settimeout(timeout)
-    recv_data = client.recv(1024)
     try:
+        recv_data = b''
+        huffdecoded = b''
+        log_message(call='pyzandro.query_server() {', address=address, flags=str(flags), timeout=timeout)
+        host, port = split_hostport(address)
+        if SQF.PLAYERDATA in flags and SQF.GAMETYPE not in flags:
+            flags.append(SQF.GAMETYPE)
+        query_flags = combine_flags(SQF, flags)
+        extended_flags = 0
+        unencoded_query = struct.pack('<llll',
+            LAUNCHER_CHALLENGE,
+            query_flags,
+            int(time.time()),
+            extended_flags)
+        client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        send_data = huffencode(unencoded_query)
+        client.sendto(send_data, (host, port))
+        log_message(call='[server] sendto()', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
+        client.settimeout(timeout)
+        recv_data = client.recv(1024)
         huffdecoded = huffdecode(recv_data)
+        log_message(call='pyzandro.query_server() ', huffdecoded=huffdecoded, recv_data=recv_data)
+        return parse_response(huffdecoded)
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
-        log_message(call='pyzandro.query_server() } huffdecode failed', traceback=traceback, recv_data=recv_data)
+        log_message(call='pyzandro.query_server() exception', huffdecoded=huffdecoded, recv_data=recv_data, traceback=traceback)
         raise
-    log_message(call='pyzandro.query_server() }', huffdecoded=huffdecoded, recv_data=recv_data)
-    return parse_response(huffdecoded)
+    finally:
+        log_message(call='pyzandro.query_server() }')

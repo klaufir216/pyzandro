@@ -40,15 +40,18 @@ def send_query(address, timeout):
 
 def get_packet(client):
     log_message(call='masterserver.get_packet() {')
-    recv_data = client.recv(1500)
     try:
+        huffdecoded = b''
+        recv_data = b''
+        recv_data = client.recv(1500)
         huffdecoded = huffdecode(recv_data)
+        return huffdecoded
     except Exception as e:
         traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
-        log_message(call='masterserver.get_packet() } huffdecode failed', traceback=traceback, recv_data=recv_data)
+        log_message(call='masterserver.get_packet() exception', recv_data=recv_data, huffdecoded=huffdecoded, traceback=traceback)
         raise
-    log_message(call='masterserver.get_packet() }', huffdecoded=huffdecoded, recv_data=recv_data)
-    return huffdecoded
+    finally:
+        log_message(call='masterserver.get_packet() }', huffdecoded=huffdecoded, recv_data=recv_data)
 
 def parse_packet(huffdecoded_packet, r={}):
     streamobj = BytesIO(huffdecoded_packet)
@@ -107,12 +110,23 @@ def parse_packet(huffdecoded_packet, r={}):
 
 def query_master(master_address, timeout=2):
     log_message(call='masterserver.query_master() {', master_address=master_address, timeout=timeout)
-    client = send_query(master_address, timeout)
-    parsed = {}
-    while True:
-        huffdecoded_packet = get_packet(client)
-        parsed = parse_packet(huffdecoded_packet, parsed)
-        if parsed['closing_status'] == MSC_ENDSERVERLIST:
-            break
-    log_message(call='masterserver.query_master() }', master_address=master_address, timeout=timeout)
-    return parsed['ip_list']
+    try:
+        client = send_query(master_address, timeout)
+        parsed = {}
+        while True:
+            # these are emptied because
+            # in case of an exception we don't
+            # want to see their value from the previous loop
+            huffdecoded_packet = b''
+            parsed = {}
+            huffdecoded_packet = get_packet(client)
+            parsed = parse_packet(huffdecoded_packet, parsed)
+            if parsed['closing_status'] == MSC_ENDSERVERLIST:
+                break
+        return parsed['ip_list']
+    except Exception as e:
+        traceback = ''.join(tb.format_exception(None, e, e.__traceback__))
+        log_message(call='masterserver.get_packet() exception', parsed=parsed, huffdecoded_packet=huffdecoded_packet, traceback=traceback)
+        raise
+    finally:
+        log_message(call='masterserver.query_master() }', master_address=master_address, timeout=timeout)
