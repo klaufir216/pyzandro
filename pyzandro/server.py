@@ -241,7 +241,7 @@ def parse_response(response):
         r['extended_info'] = next_long(streamobj)
     return r
 
-def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAYERDATA, SQF.GAMETYPE], timeout=2):
+def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAYERDATA, SQF.GAMETYPE], timeout=3):
     # if we request playerdata we MUST also request gametype, because the presence
     # of the 'team' field depends in the playerdata response depends on the gametype
     # for non team games the byte representing the player's team is simply not sent
@@ -261,9 +261,9 @@ def query_server(address, flags=[SQF.NAME, SQF.MAPNAME, SQF.NUMPLAYERS, SQF.PLAY
             extended_flags)
         client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         send_data = huffencode(unencoded_query)
+        client.settimeout(timeout)
         client.sendto(send_data, (host, port))
         log_message(call='pyzandro.query_server() sendto', unencoded_query=unencoded_query, send_data=send_data, address=(host, port))
-        client.settimeout(timeout)
         recv_data = client.recv(1024)
         huffdecoded = huffdecode(recv_data)
         log_message(call='pyzandro.query_server() recv', huffdecoded=huffdecoded, recv_data=recv_data)

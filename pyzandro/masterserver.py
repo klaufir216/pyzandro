@@ -116,7 +116,7 @@ def parse_packet(huffdecoded_packet, r={}):
         r['closing_status_meaning'] = 'MSC_ENDSERVERLISTPART'
     return r
 
-def query_master(master_address, timeout=2):
+def query_master(master_address, timeout=3):
     log_message(call='masterserver.query_master() {', master_address=master_address, timeout=timeout)
     try:
         client = send_query(master_address, timeout)
