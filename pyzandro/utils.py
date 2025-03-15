@@ -21,7 +21,6 @@ def base64ify(val):
 
 def log_message(**kwargs):
     if log_config['log_target'] is None:
-        print("log_config['log_target'] is None")
         return
     d = {'unix_time': time.time()}
     for k,v in kwargs.items():
